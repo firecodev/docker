@@ -1,0 +1,26 @@
+services:
+  nginx:
+    image: docker.io/library/nginx:stable-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx:/etc/nginx:ro
+      - ./cert:/usr/local/share/cert:ro
+      - ./log/nginx:/var/log/nginx
+      - ./webroot:/var/www
+    restart: unless-stopped
+
+  php-fpm:
+    build: ./build/php-fpm
+    volumes:
+      - ./webroot:/var/www
+    restart: unless-stopped
+
+  mariadb:
+    image: docker.io/library/mariadb:10
+    volumes:
+      - ./data/mariadb:/var/lib/mysql
+    environment:
+      - MARIADB_ROOT_PASSWORD=password
+    restart: unless-stopped

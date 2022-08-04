@@ -16,6 +16,10 @@ services:
   php-fpm:
     build: ./build/php-fpm
     volumes:
+      - ./config/php-fpm/php.ini:/usr/local/etc/php/php.ini:ro
+      - ./config/php-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
+      - ./config/php-fpm/pool.d/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+      - ./log/php-fpm/:/var/log/php-fpm
       - ./webroot:/var/www
     environment:
       - TZ=Asia/Taipei

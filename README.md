@@ -13,7 +13,7 @@ docker compose -p project-name up -d
 
 **Update Images and Containers**
 
-The second command will remove all unused containers, networks, images (both dangling and unreferenced).
+The second command will remove all unused containers, networks and images (both dangling and unreferenced).
 
 ```
 docker compose down

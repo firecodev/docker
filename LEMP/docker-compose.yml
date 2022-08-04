@@ -9,12 +9,16 @@ services:
       - ./cert:/usr/local/share/cert:ro
       - ./log/nginx:/var/log/nginx
       - ./webroot:/var/www
+    environment:
+      - TZ=Asia/Taipei
     restart: unless-stopped
 
   php-fpm:
     build: ./build/php-fpm
     volumes:
       - ./webroot:/var/www
+    environment:
+      - TZ=Asia/Taipei
     restart: unless-stopped
 
   mariadb:
@@ -23,4 +27,6 @@ services:
       - ./data/mariadb:/var/lib/mysql
     environment:
       - MARIADB_ROOT_PASSWORD=password
+    environment:
+      - TZ=Asia/Taipei
     restart: unless-stopped

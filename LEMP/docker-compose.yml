@@ -31,6 +31,6 @@ services:
       - ./data/mariadb:/var/lib/mysql
     environment:
       - MARIADB_ROOT_PASSWORD=password
-    environment:
+      - MARIADB_ROOT_HOST=localhost
       - TZ=Asia/Taipei
     restart: unless-stopped

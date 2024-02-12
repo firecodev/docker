@@ -1,0 +1,23 @@
+version: "3"
+
+networks:
+  traefik:
+    name: "${TRAEFIK_NETWORK_NAME}"
+    external: true
+
+services:
+  whoami:
+    image: traefik/whoami
+    container_name: whoami
+    networks:
+      - default
+      - traefik
+    environment:
+      - TZ=Asia/Taipei
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${TRAEFIK_NETWORK_NAME}
+      - traefik.http.routers.traefik_whoami.rule=Host(`${WHOAMI_DOMAIN}`)
+      - traefik.http.routers.traefik_whoami.entrypoints=websecure
+      - traefik.http.routers.traefik_whoami.tls=true
+      - traefik.http.routers.traefik_whoami.tls.certresolver=letsencrypt

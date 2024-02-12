@@ -1,0 +1,67 @@
+version: "3"
+
+networks:
+  traefik:
+    name: "${TRAEFIK_NETWORK_NAME}"
+
+services:
+  traefik:
+    image: traefik:3.0
+    container_name: traefik
+    restart: unless-stopped
+    networks:
+      - traefik
+    logging:
+      options:
+        max-size: 10m
+    ports:
+      - 80:80
+      - 443:443
+      #- 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme:/etc/traefik/acme
+      - ./tls.yml:/etc/traefik/tls.yml:ro
+    command:
+      - --global.checknewversion=false
+      - --global.sendanonymoususage=false
+      - --accesslog=true
+      - --accesslog.fields.names.StartUTC=drop
+      - --api=true
+      - --api.dashboard=true
+      - --api.disabledashboardad=true # disable ad in the dashboard.
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --log.level=INFO
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+      - --entryPoints.web.http.redirections.entryPoint.to=websecure
+      - --entryPoints.web.http.redirections.entryPoint.scheme=https
+      - --certificatesResolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json
+      #- --certificatesresolvers.zerossl.acme.caserver=https://acme.zerossl.com/v2/DV90
+      #- --certificatesresolvers.zerossl.acme.eab.hmacencoded=getitfromzerosslapi
+      #- --certificatesresolvers.zerossl.acme.eab.kid=getitfromzerosslapi
+      - --certificatesResolvers.letsencrypt.acme.email=${ACME_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.keytype=RSA4096
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare
+      #- --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=porkbun
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge.disablepropagationcheck=true
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge.delaybeforecheck=600
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge=false
+      - --certificatesResolvers.letsencrypt.acme.tlsChallenge=false
+      - --providers.file.filename=/etc/traefik/tls.yml
+    environment:
+      - TZ=Asia/Taipei
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      #- CF_ZONE_API_TOKEN=${CF_ZONE_API_TOKEN}
+      #- PORKBUN_API_KEY=${PORKBUN_API_KEY}
+      #- PORKBUN_SECRET_API_KEY=${PORKBUN_SECRET_API_KEY}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik_dashboard.rule=Host(`${TRAEFIK_DOMAIN}`)
+      - traefik.http.routers.traefik_dashboard.entrypoints=websecure
+      - traefik.http.routers.traefik_dashboard.tls=true
+      - traefik.http.routers.traefik_dashboard.tls.certresolver=letsencrypt
+      - traefik.http.routers.traefik_dashboard.service=api@internal

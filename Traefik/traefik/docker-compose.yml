@@ -16,7 +16,8 @@ services:
         max-size: 10m
     ports:
       - 80:80
-      - 443:443
+      - 443:443/tcp
+      - 443:443/udp
       #- 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -36,6 +37,8 @@ services:
       - --log.level=INFO
       - --entryPoints.web.address=:80
       - --entryPoints.websecure.address=:443
+      - --entryPoints.websecure.http3=true
+      - --entryPoints.websecure.http3.advertisedport=443
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
       - --certificatesResolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json

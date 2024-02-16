@@ -41,19 +41,19 @@ services:
       - --entryPoints.websecure.http3.advertisedport=443
       - --entryPoints.web.http.redirections.entryPoint.to=websecure
       - --entryPoints.web.http.redirections.entryPoint.scheme=https
-      - --certificatesResolvers.letsencrypt.acme.storage=/etc/traefik/acme/acme.json
+      - --certificatesResolvers.letsencrypt_cf.acme.storage=/etc/traefik/acme/letsencrypt_cf.json
       #- --certificatesresolvers.zerossl.acme.caserver=https://acme.zerossl.com/v2/DV90
       #- --certificatesresolvers.zerossl.acme.eab.hmacencoded=getitfromzerosslapi
       #- --certificatesresolvers.zerossl.acme.eab.kid=getitfromzerosslapi
-      - --certificatesResolvers.letsencrypt.acme.email=${ACME_EMAIL}
-      - --certificatesresolvers.letsencrypt.acme.keytype=RSA4096
-      - --certificatesresolvers.letsencrypt.acme.dnschallenge=true
-      - --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare
-      #- --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=porkbun
-      - --certificatesresolvers.letsencrypt.acme.dnschallenge.disablepropagationcheck=true
-      - --certificatesresolvers.letsencrypt.acme.dnschallenge.delaybeforecheck=600
-      - --certificatesresolvers.letsencrypt.acme.httpchallenge=false
-      - --certificatesResolvers.letsencrypt.acme.tlsChallenge=false
+      - --certificatesResolvers.letsencrypt_cf.acme.email=${ACME_EMAIL}
+      - --certificatesresolvers.letsencrypt_cf.acme.keytype=RSA4096
+      - --certificatesresolvers.letsencrypt_cf.acme.dnschallenge=true
+      - --certificatesresolvers.letsencrypt_cf.acme.dnschallenge.provider=cloudflare
+      #- --certificatesresolvers.letsencrypt_porkbun.acme.dnschallenge.provider=porkbun
+      - --certificatesresolvers.letsencrypt_cf.acme.dnschallenge.disablepropagationcheck=true
+      - --certificatesresolvers.letsencrypt_cf.acme.dnschallenge.delaybeforecheck=600
+      - --certificatesresolvers.letsencrypt_cf.acme.httpchallenge=false
+      - --certificatesResolvers.letsencrypt_cf.acme.tlsChallenge=false
       - --providers.file.filename=/etc/traefik/tls.yml
     environment:
       - TZ=Asia/Taipei
@@ -66,5 +66,5 @@ services:
       - traefik.http.routers.traefik_dashboard.rule=Host(`${TRAEFIK_DOMAIN}`)
       - traefik.http.routers.traefik_dashboard.entrypoints=websecure
       - traefik.http.routers.traefik_dashboard.tls=true
-      - traefik.http.routers.traefik_dashboard.tls.certresolver=letsencrypt
+      - traefik.http.routers.traefik_dashboard.tls.certresolver=letsencrypt_cf
       - traefik.http.routers.traefik_dashboard.service=api@internal
